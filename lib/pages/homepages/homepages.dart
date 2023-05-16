@@ -138,7 +138,7 @@ class _BodyHomeState extends State<BodyHome> {
                   ),
                 ),
                 SizedBox(
-                  height: 150, // Altura de la lista de imágenes
+                  height: 115, // Altura de la lista de imágenes
                   child: ListView.builder(
                     scrollDirection:
                         Axis.horizontal, // Desplazamiento horizontal
@@ -204,9 +204,7 @@ class _BodyHomeState extends State<BodyHome> {
           Container(
             height: 200,
           ),
-          FloatingActionButton(onPressed: () {
-            controlm.getMovieGral().then((value) => Get.toNamed('/listmovie'));
-          })
+          
         ],
       ),
     );

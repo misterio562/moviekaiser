@@ -21,8 +21,7 @@ class VideoDemoState extends State<VideoDemo> {
 
   @override
   void initState() {
-    _controller = VideoPlayerController.network(
-        "https://moviekaiser.online/movies/m4rio.mp4");
+    _controller = VideoPlayerController.network(widget.movie.video);
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     _controller.setVolume(1.0);
@@ -90,7 +89,7 @@ class VideoDemoState extends State<VideoDemo> {
                         ),
                         SizedBox(width: 5),
                         Text(
-                          "100", // Aquí puedes cambiar por la cantidad real de "me gusta"
+                          widget.movie.likes.toString(), // Aquí puedes cambiar por la cantidad real de "me gusta"
                           style: TextStyle(fontSize: 14, color: Colors.white),
                         ),
                         const SizedBox(width: 20),

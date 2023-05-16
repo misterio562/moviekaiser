@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class RequestMovie{
   static Future<List<Movie>> getListMovie() async{
-    var url = Uri.parse("https://busetp.000webhostapp.com/APIMOVIE/listaMovie.php");
+    var url = Uri.parse("https://moviekaiser.online/APIMOVIE/listaMovie.php");
     final response = await http.get(url);
 
     return compute(convertirAlista, response.body);

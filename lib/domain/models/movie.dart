@@ -7,6 +7,7 @@ class Movie{
   late String duration;
   late String video;
   late int idGender;
+  late int likes;
 
   Movie(
     {
@@ -17,20 +18,22 @@ class Movie{
       required this.year,
       required this.duration,
       required this.video,
-      required this.idGender
+      required this.idGender,
+      required this.likes
     }
   );
 
   factory Movie.desdeJson(Map<String, dynamic> jsonMap){
     return Movie(
-      id: int.parse(jsonMap['id']),
+      id: int.parse(jsonMap['idMovie']),
       title: jsonMap['title'],
       description: jsonMap['description'],
       image: jsonMap['image'],
       year: jsonMap['year'],
       duration: jsonMap['duration'],
       video: jsonMap['video'],
-      idGender: int.parse(jsonMap['idGender'])
+      idGender: int.parse(jsonMap['idGender']),
+      likes: int.parse(jsonMap['likes'])
     );
   }
 
