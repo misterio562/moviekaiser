@@ -13,15 +13,24 @@ class ListMovies extends StatefulWidget {
 }
 
 class _ListMoviesState extends State<ListMovies> {
+  ControlMovie controlm = Get.find();
+
+  @override
+  void initState() {
+    controlm.getMovieGral();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final ControlMovie controlm = Get.find();
+    print(controlm.listMovieGral!.length);
 
     void _onItemTap(int index) {
       Movie movie = controlm.listMovieGral![index];
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => VideoDemo(movie: movie)),
+        MaterialPageRoute(builder: (context) => VideoDemo(movie: movie,)),
       );
     }
 
@@ -31,11 +40,9 @@ class _ListMoviesState extends State<ListMovies> {
         title: const Text('Lista de Peliculas'),
       ),
       body: ListView.builder(
-        
           itemCount: controlm.listMovieGral!.length,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
-              
               contentPadding: const EdgeInsets.symmetric(vertical: 10),
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
@@ -43,7 +50,7 @@ class _ListMoviesState extends State<ListMovies> {
                     width: 200, height: 200),
               ),
               title: Text(controlm.listMovieGral![index].title,
-              style: const TextStyle(color: Colors.white) ),
+                  style: const TextStyle(color: Colors.white)),
               onTap: () {
                 _onItemTap(index);
               },

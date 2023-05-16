@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:moviekaiser/domain/controller/movie/controllerMovie.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../domain/models/movie.dart';
@@ -15,6 +17,7 @@ class VideoDemo extends StatefulWidget {
 class VideoDemoState extends State<VideoDemo> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
+  bool showFullDescription = false;
 
   @override
   void initState() {
@@ -34,79 +37,129 @@ class VideoDemoState extends State<VideoDemo> {
 
   @override
   Widget build(BuildContext context) {
+    ControlMovie controlm = Get.find();
     return Scaffold(
       backgroundColor: Colors.black87,
-      appBar: AppBar(
-        title: Text(widget.movie.title),
-      ),
       body: FutureBuilder(
         future: _initializeVideoPlayerFuture,
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 10,
-                ),
-                Row(
+          return ListView(
+            children: [
+              const SizedBox(
+                height: 10,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   children: [
-                    Image.network(widget.movie.image, width: 100, height: 100),
-                    Column(
-                      children: [
-                        Text(
-                          widget.movie.title,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: IconButton(
+                        onPressed: () {
+                          // controlm
+                          //     .getMovieGral()
+                          //     .then((value) => Get.toNamed('/listmovie'));
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.close),
+                        color: Colors.white,
+                      ),
+                    ),
+                    Image.network(widget.movie.image, width: 200, height: 200),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      widget.movie.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.white),
+                    ),
+                    Text(
+                      widget.movie.year,
+                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.thumb_up_alt_outlined),
+                          color: Colors.white,
                         ),
+                        SizedBox(width: 5),
                         Text(
-                          widget.movie.year,
-                          style: const TextStyle(
-                              fontSize: 14, color: Colors.white),
+                          "100", // Aquí puedes cambiar por la cantidad real de "me gusta"
+                          style: TextStyle(fontSize: 14, color: Colors.white),
+                        ),
+                        const SizedBox(width: 20),
+                        Column(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.add),
+                              color: Colors.white,
+                              onPressed: () {},
+                            ), // Icono arriba
+                            const Text(
+                              "Añadir a lista", // Texto
+                              style:
+                                  TextStyle(fontSize: 14, color: Colors.white),
+                            ),
+                          ],
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Sinopsis',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.white),
-                      ),
-                      Text(
-                        widget.movie.description,
-                        style:
-                            const TextStyle(fontSize: 14, color: Colors.white),
-                      ),
-                      const SizedBox(height: 10),
-                      AspectRatio(
-                        aspectRatio: _controller.value.aspectRatio,
-                        child: VideoPlayer(_controller),
-                      ),
-                      const SizedBox(height: 10),
-                      VideoProgressIndicator(
-                        _controller,
-                        allowScrubbing: true,
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            const Text(
+                              'Sinopsis',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.white),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  showFullDescription = !showFullDescription;
+                                });
+                              },
+                              child: Text(
+                                widget.movie.description,
+                                maxLines: showFullDescription ? null : 10,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: 14, color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        )),
+                    const SizedBox(height: 10),
+                    AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                    const SizedBox(height: 10),
+                    VideoProgressIndicator(
+                      _controller,
+                      allowScrubbing: true,
+                    ),
+                  ],
                 ),
-              ],
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
+              ),
+            ],
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

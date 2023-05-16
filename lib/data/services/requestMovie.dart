@@ -30,4 +30,8 @@ class RequestMovie{
     return pasar.map<Movie>((json) => Movie.desdeJson(json)).toList();
   }
 
+  // static Future<int> getLikesMovie()async{
+    
+  // }
+
 }
