@@ -2,19 +2,26 @@ import 'package:get/get.dart';
 import 'package:moviekaiser/data/services/requestMovie.dart';
 import 'package:moviekaiser/domain/models/movie.dart';
 
-class ControlMovie extends GetxController{
-  final Rxn<List<Movie>> listMovie = Rxn<List<Movie>>([]);
-  final Rxn<int> likes = Rxn<int>();
+class ControlMovie extends GetxController {
+  final Rxn<List<Movie>> listPopularMovie = Rxn<List<Movie>>([]);
+  final Rxn<List<Movie>> listTrendMovie = Rxn<List<Movie>>([]);
 
-  Future<void> getMovieGral() async{
-    listMovie.value = await RequestMovie.getListMovie();
+  Future<void> getPopularMovies() async {
+    listPopularMovie.value = await RequestMovie.getPopularMovies();
   }
 
-  // Future<void> rated() async{
-  //   likes.value = await RequestMovie.getLikesMovie();
-  // }
+  Future<void> getTrendMovies() async {
+    listTrendMovie.value = await RequestMovie.getTrendMovies();
+  }
 
-  List<Movie>? get listMovieGral => listMovie.value;
-  int? get likesGral => likes.value;
+  Future<bool> addLike(int idMovie) async {
+    return await RequestMovie.addLike(idMovie);
+  }
 
+  Future<bool> deleteLike(int idMovie) async {
+    return await RequestMovie.deleteLike(idMovie);
+  }
+
+  List<Movie>? get listPopularMovieGral => listPopularMovie.value;
+  List<Movie>? get listTrendMovieGral => listTrendMovie.value;
 }

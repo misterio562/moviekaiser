@@ -21,8 +21,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
-    controlm.getMovieGral();
     super.initState();
+
   }
 
   void _signOut() async {
@@ -36,61 +36,66 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: SizedBox(
-          height: 40,
-          width: 40,
-          child: Image.asset('assets/logoMoviekaiser.png'),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons
-                .account_circle_outlined), // Aquí puedes cambiar el icono por el que desees
-            onPressed: () {
-              // Aquí puedes definir la acción al presionar el icono
-              _scaffoldKey.currentState?.openEndDrawer();
-            },
+    return WillPopScope(
+      onWillPop: ()async{
+        return false;
+      },
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: SizedBox(
+            height: 40,
+            width: 40,
+            child: Image.asset('assets/logoMoviekaiser.png'),
           ),
-        ],
-        backgroundColor: Colors.amber,
-      ),
-      endDrawer: Drawer(
-        backgroundColor: Colors.black87,
-        width: 200,
-        child: ListView(
-          children: [
-            SizedBox(
-              height: 150,
-              child: Center(
-                  child: Image.asset(
-                'assets/logoMoviekaiser.png',
-                fit: BoxFit.cover,
-              )),
-            ),
-            ListTile(
-              title: Text("Nombre:\n${controlu.listaUserLogin?[0].nombre}",
-                  style: const TextStyle(color: Colors.white)),
-              subtitle: Text("Correo:\n${controlu.listaUserLogin?[0].user}",
-                  style: const TextStyle(color: Colors.white)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout,
-                  color: Color.fromARGB(255, 255, 255, 255)),
-              title: const Text(
-                'Cerrar Sesión',
-                style: TextStyle(color: Colors.white),
-              ),
-              onTap: _signOut,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons
+                  .account_circle_outlined), // Aquí puedes cambiar el icono por el que desees
+              onPressed: () {
+                // Aquí puedes definir la acción al presionar el icono
+                _scaffoldKey.currentState?.openEndDrawer();
+              },
             ),
           ],
+          backgroundColor: Colors.amber,
         ),
+        endDrawer: Drawer(
+          backgroundColor: Colors.black87,
+          width: 200,
+          child: ListView(
+            children: [
+              SizedBox(
+                height: 150,
+                child: Center(
+                    child: Image.asset(
+                  'assets/logoMoviekaiser.png',
+                  fit: BoxFit.cover,
+                )),
+              ),
+              ListTile(
+                title: Text("Nombre:\n${controlu.listaUserLogin?[0].nombre}",
+                    style: const TextStyle(color: Colors.white)),
+                subtitle: Text("Correo:\n${controlu.listaUserLogin?[0].user}",
+                    style: const TextStyle(color: Colors.white)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout,
+                    color: Color.fromARGB(255, 255, 255, 255)),
+                title: const Text(
+                  'Cerrar Sesión',
+                  style: TextStyle(color: Colors.white),
+                ),
+                onTap: _signOut,
+              ),
+            ],
+          ),
+        ),
+        body: const BodyHome(),
+        bottomNavigationBar: const BottonNavigatosBar(),
+        backgroundColor: Colors.black,
       ),
-      body: const BodyHome(),
-      bottomNavigationBar: const BottonNavigatosBar(),
-      backgroundColor: Colors.black,
     );
   }
 }
@@ -106,12 +111,13 @@ class _BodyHomeState extends State<BodyHome> {
   @override
   Widget build(BuildContext context) {
     final ControlMovie controlm = Get.find();
-    print(controlm.listMovieGral!.length);
-    controlm.getMovieGral().then((value) => Get.toNamed('/home'));
+    print(controlm.listPopularMovieGral!.length);
+    print(controlm.listPopularMovieGral!.length);
+    // controlm.getMovieGral().then((value) => Get.toNamed('/home'));
 
     // ignore: no_leading_underscores_for_local_identifiers
     void _onTap(int index) {
-      Movie movie = controlm.listMovieGral![index];
+      Movie movie = controlm.listPopularMovieGral![index];
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => VideoDemo(movie: movie)),
@@ -129,7 +135,7 @@ class _BodyHomeState extends State<BodyHome> {
                 const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    'Populares en Movikaiser',
+                    'Populares de MovieKaiser',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -138,18 +144,65 @@ class _BodyHomeState extends State<BodyHome> {
                   ),
                 ),
                 SizedBox(
-                  height: 115, // Altura de la lista de imágenes
+                  height: 150, // Altura de la lista de imágenes
                   child: ListView.builder(
                     scrollDirection:
                         Axis.horizontal, // Desplazamiento horizontal
-                    itemCount: controlm.listMovieGral!.length,
+                    itemCount: controlm.listPopularMovieGral!.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final movie = controlm.listMovieGral![index];
+                      final movie = controlm.listPopularMovieGral![index];
                       // Aquí debes definir cómo se muestra cada imagen en la lista
                       try {
                         return Padding(
                             padding: const EdgeInsets.all(8.0),
                             //child: Image.network("https://cdn.pixabay.com/photo/2019/10/17/21/17/joker-4557864_960_720.jpg"),
+                            child: InkWell(
+                              onTap: () {
+                                _onTap(index);
+                              },
+                              child: Image.network(
+                                movie.image,
+                                height: 120,
+                              ),
+                            ));
+                      } catch (e) {
+                        print('Error al cargar la imagen: $e');
+                        return const SizedBox(); // O muestra un widget alternativo en caso de error
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 200,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Tendencias',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 150, // Altura de la lista de imágenes
+                  child: ListView.builder(
+                    scrollDirection:
+                        Axis.horizontal, // Desplazamiento horizontal
+                    itemCount: controlm.listTrendMovieGral!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final movie = controlm.listTrendMovieGral![index];
+                      // Aquí debes definir cómo se muestra cada imagen en la lista
+                      try {
+                        return Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: InkWell(
                               onTap: () {
                                 _onTap(index);
@@ -176,7 +229,7 @@ class _BodyHomeState extends State<BodyHome> {
               child: Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  'Tendencias',
+                  'Mi lista',
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -184,25 +237,6 @@ class _BodyHomeState extends State<BodyHome> {
                 ),
               ),
             ),
-          ),
-          Container(
-            height: 200,
-            child: const Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Sugeridos para ti',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: 200,
           ),
           
         ],
@@ -210,52 +244,6 @@ class _BodyHomeState extends State<BodyHome> {
     );
   }
 }
-
-// class name extends StatelessWidget {
-//   const name({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     ControlMovie controlm = Get.find();
-//     final List<String> buttonNames = [
-//       'Animado',
-//       'Suspenso',
-//       'Terror',
-//       'Acción',
-//       'Comedia',
-//       'Ficción'
-//     ];
-
-//     return Container(
-//         padding: const EdgeInsets.all(50),
-//         child: GridView.count(
-//           crossAxisCount: 2,
-//           mainAxisSpacing: 16,
-//           crossAxisSpacing: 16,
-//           childAspectRatio: 2,
-//           children: List.generate(buttonNames.length, (index) {
-//             // Escoge un color aleatorio para cada botón
-//             final color = Colors.primaries[index % Colors.primaries.length];
-//             return ElevatedButton(
-//               onPressed: () {
-//                 controlm
-//                     .getMovieGral()
-//                     .then((value) => Get.toNamed('/listmovie'));
-//               },
-//               style: ElevatedButton.styleFrom(
-//                 primary: color,
-//                 shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(16)),
-//               ),
-//               child: Text(
-//                 buttonNames[index],
-//                 style: const TextStyle(color: Colors.black, fontSize: 20),
-//               ),
-//             );
-//           }),
-//         ));
-//   }
-// }
 
 class BottonNavigatosBar extends StatefulWidget {
   const BottonNavigatosBar({super.key});

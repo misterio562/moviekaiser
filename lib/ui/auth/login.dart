@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moviekaiser/domain/controller/movie/controllerMovie.dart';
+import 'package:moviekaiser/pages/homepages/homepages.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/controller/controllerUser.dart';
 
@@ -15,11 +17,25 @@ class _LoginState extends State<Login> {
   ControlUser controlu = Get.find();
   ControlMovie controlm = Get.find();
 
+  // late SharedPreferences prefs;
+  // bool isLoggedIn = false;
+
   TextEditingController user = TextEditingController();
   TextEditingController pass = TextEditingController();
 
   String userErrorText = "";
   String passErrorText = "";
+
+  // Future<void> checkLoginStatus() async {
+  //   prefs = await SharedPreferences.getInstance();
+  //   isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+  //   if (isLoggedIn) {
+  //     controlm.getMovieGral().then((value) {
+  //       Navigator.pushNamed(context, '/home');
+  //     });
+  //   }
+  // }
 
   void validateFields() {
     setState(() {
@@ -38,7 +54,9 @@ class _LoginState extends State<Login> {
               shouldIconPulse: true,
               backgroundColor: Colors.yellow);
         } else {
-          controlm.getMovieGral().then((value) => Get.toNamed("/home"));
+          controlm.getTrendMovies();
+          controlm.getPopularMovies().then((value) => Navigator.push(
+              context, MaterialPageRoute(builder: ((context) => const Home()))));
         }
       });
     }

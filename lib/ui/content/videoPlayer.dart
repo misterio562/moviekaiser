@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moviekaiser/domain/controller/controllerLiked.dart';
+import 'package:moviekaiser/domain/controller/controllerUser.dart';
 import 'package:moviekaiser/domain/controller/movie/controllerMovie.dart';
 import 'package:video_player/video_player.dart';
 
@@ -18,25 +20,46 @@ class VideoDemoState extends State<VideoDemo> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   bool showFullDescription = false;
+  bool isLiked = false;
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
     _controller = VideoPlayerController.network(widget.movie.video);
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     _controller.setVolume(1.0);
-    super.initState();
+
+    // Ejecutar la función getLikedByIdUser al iniciar el widget
+    final controlLiked = Get.find<ControlLiked>();
+    final controlUser = Get.find<ControlUser>();
+    final idUser = controlUser.listaUserLogin![0].id;
+    final idMovie = widget.movie.id;
+    controlLiked.getLikedByIdUser(idUser, idMovie).then((result) {
+      setState(() {
+        isLiked = result;
+      });
+    });
+
+    super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _controller.pause();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     ControlMovie controlm = Get.find();
+    ControlLiked controll = Get.find();
+    ControlUser controlu = Get.find();
     return Scaffold(
       backgroundColor: Colors.black87,
       body: FutureBuilder(
@@ -70,27 +93,72 @@ class VideoDemoState extends State<VideoDemo> {
                     ),
                     Text(
                       widget.movie.title,
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                           color: Colors.white),
                     ),
-                    Text(
-                      widget.movie.year,
-                      style: const TextStyle(fontSize: 14, color: Colors.white),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            widget.movie.year,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                        const VerticalDivider(
+                          color: Colors.white,
+                          thickness: 1,
+                          width: 20,
+                        ),
+                        Flexible(
+                          child: Text(
+                            widget.movie.duration,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.white),
+                          ),
+                        ),
+                      ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.thumb_up_alt_outlined),
+                          onPressed: () {
+                            int iu = controlu.listaUserLogin![0].id;
+                            int im = widget.movie.id;
+                            if (isLiked) {
+                              controll.deleteLike(iu, im);
+                              controlm.deleteLike(im);
+                              setState(() {
+                                isLiked = !true;
+                                widget.movie.likes--;
+                              });
+                            } else {
+                              controll.addLike(iu, im);
+                              controlm.addLike(im);
+                              setState(() {
+                                isLiked = true;
+                                widget.movie.likes++;
+                              });
+                            }
+                          },
+                          icon: Icon(isLiked
+                              ? Icons.thumb_up
+                              : Icons.thumb_up_alt_outlined),
                           color: Colors.white,
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                         Text(
-                          widget.movie.likes.toString(), // Aquí puedes cambiar por la cantidad real de "me gusta"
-                          style: TextStyle(fontSize: 14, color: Colors.white),
+                          widget.movie.likes
+                              .toString(), // Aquí puedes cambiar por la cantidad real de "me gusta"
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.white),
                         ),
                         const SizedBox(width: 20),
                         Column(

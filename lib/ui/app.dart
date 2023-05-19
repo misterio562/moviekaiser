@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:moviekaiser/pages/homepages/homepages.dart';
 import 'package:moviekaiser/ui/auth/login.dart';
 import 'package:moviekaiser/ui/auth/register.dart';
-import 'package:moviekaiser/ui/content/listaPelicula.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -18,7 +17,6 @@ class App extends StatelessWidget {
         "/login": (context) => const Login(),
         "/register": (context) => const Register(),
         "/home": (context) => const Home(),
-        "/listmovie": (context) => const ListMovies(),
       },
     );
   }
