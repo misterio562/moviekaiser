@@ -15,14 +15,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  ControlMovie controlm = Get.find();
-  ControlUser controlu = Get.find();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late ControlUser controlu;
+  late ControlMovie controlm;
 
   @override
   void initState() {
     super.initState();
-
+    controlm = Get.find<ControlMovie>();
+    controlu = Get.find<ControlUser>();
+    controlm.getFavoritesMovies(controlu.listaUserLogin![0].id);
   }
 
   void _signOut() async {
@@ -37,7 +39,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: ()async{
+      onWillPop: () async {
         return false;
       },
       child: Scaffold(
@@ -113,15 +115,23 @@ class _BodyHomeState extends State<BodyHome> {
     final ControlMovie controlm = Get.find();
     print(controlm.listPopularMovieGral!.length);
     print(controlm.listPopularMovieGral!.length);
+    print(controlm.listFavoriteMovieGral!.length);
     // controlm.getMovieGral().then((value) => Get.toNamed('/home'));
 
     // ignore: no_leading_underscores_for_local_identifiers
-    void _onTap(int index) {
+    void onTapPopular(int index) {
       Movie movie = controlm.listPopularMovieGral![index];
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => VideoDemo(movie: movie)),
-      );
+      Get.to(() => VideoDemo(movie: movie));
+    }
+
+    void onTapTrend(int index) {
+      Movie movie = controlm.listTrendMovieGral![index];
+      Get.to(() => VideoDemo(movie: movie));
+    }
+
+    void onTapFavorites(int index) {
+      Movie movie = controlm.listFavoriteMovieGral![index];
+      Get.to(() => VideoDemo(movie: movie));
     }
 
     return SingleChildScrollView(
@@ -151,24 +161,15 @@ class _BodyHomeState extends State<BodyHome> {
                     itemCount: controlm.listPopularMovieGral!.length,
                     itemBuilder: (BuildContext context, int index) {
                       final movie = controlm.listPopularMovieGral![index];
-                      // Aquí debes definir cómo se muestra cada imagen en la lista
-                      try {
-                        return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            //child: Image.network("https://cdn.pixabay.com/photo/2019/10/17/21/17/joker-4557864_960_720.jpg"),
-                            child: InkWell(
-                              onTap: () {
-                                _onTap(index);
-                              },
-                              child: Image.network(
-                                movie.image,
-                                height: 120,
-                              ),
-                            ));
-                      } catch (e) {
-                        print('Error al cargar la imagen: $e');
-                        return const SizedBox(); // O muestra un widget alternativo en caso de error
-                      }
+                      return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: InkWell(
+                            onTap: () => onTapPopular(index),
+                            child: Image.network(
+                              movie.image,
+                              height: 120,
+                            ),
+                          ));
                     },
                   ),
                 ),
@@ -205,7 +206,7 @@ class _BodyHomeState extends State<BodyHome> {
                             padding: const EdgeInsets.all(8.0),
                             child: InkWell(
                               onTap: () {
-                                _onTap(index);
+                                onTapTrend(index);
                               },
                               child: Image.network(
                                 movie.image,
@@ -222,37 +223,62 @@ class _BodyHomeState extends State<BodyHome> {
               ],
             ),
           ),
-          Container(
+          SizedBox(
             height: 200,
-            child: const Align(
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Mi lista',
-                  style: TextStyle(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Mi lista',
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
-                      fontWeight: FontWeight.bold),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(
+                  height: 150, // Altura de la lista de imágenes
+                  child: ListView.builder(
+                    scrollDirection:
+                        Axis.horizontal, // Desplazamiento horizontal
+                    itemCount: controlm.listFavoriteMovieGral!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final movie = controlm.listFavoriteMovieGral![index];
+                      // Aquí debes definir cómo se muestra cada imagen en la lista
+                      try {
+                        return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                onTapFavorites(index);
+                              },
+                              child: Image.network(
+                                movie.image,
+                                height: 120,
+                              ),
+                            ));
+                      } catch (e) {
+                        print('Error al cargar la imagen: $e');
+                        return const SizedBox(); // O muestra un widget alternativo en caso de error
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
-          
         ],
       ),
     );
   }
 }
 
-class BottonNavigatosBar extends StatefulWidget {
+class BottonNavigatosBar extends StatelessWidget {
   const BottonNavigatosBar({super.key});
 
-  @override
-  State<BottonNavigatosBar> createState() => _BottonNavigatosBarState();
-}
-
-class _BottonNavigatosBarState extends State<BottonNavigatosBar> {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -268,6 +294,7 @@ class _BottonNavigatosBarState extends State<BottonNavigatosBar> {
             label: 'Inicio',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
+          
         ],
         backgroundColor: Colors.amber,
         unselectedItemColor: Colors.black,

@@ -54,9 +54,12 @@ class _LoginState extends State<Login> {
               shouldIconPulse: true,
               backgroundColor: Colors.yellow);
         } else {
+          print(controlu.listaUserLogin![0].id);
+          controlm.getFavoritesMovies(controlu.listaUserLogin![0].id);
           controlm.getTrendMovies();
-          controlm.getPopularMovies().then((value) => Navigator.push(
-              context, MaterialPageRoute(builder: ((context) => const Home()))));
+          controlm.getPopularMovies().then((value) {
+            Navigator.pushNamed(context, '/home');
+          });
         }
       });
     }

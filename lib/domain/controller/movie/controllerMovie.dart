@@ -5,6 +5,7 @@ import 'package:moviekaiser/domain/models/movie.dart';
 class ControlMovie extends GetxController {
   final Rxn<List<Movie>> listPopularMovie = Rxn<List<Movie>>([]);
   final Rxn<List<Movie>> listTrendMovie = Rxn<List<Movie>>([]);
+    final Rxn<List<Movie>> listFavoritesMovies = Rxn<List<Movie>>([]);
 
   Future<void> getPopularMovies() async {
     listPopularMovie.value = await RequestMovie.getPopularMovies();
@@ -13,6 +14,11 @@ class ControlMovie extends GetxController {
   Future<void> getTrendMovies() async {
     listTrendMovie.value = await RequestMovie.getTrendMovies();
   }
+
+  Future<void> getFavoritesMovies(int iu) async {
+    listFavoritesMovies.value = await RequestMovie.getFavoritesMovies(iu);
+  }
+
 
   Future<bool> addLike(int idMovie) async {
     return await RequestMovie.addLike(idMovie);
@@ -24,4 +30,6 @@ class ControlMovie extends GetxController {
 
   List<Movie>? get listPopularMovieGral => listPopularMovie.value;
   List<Movie>? get listTrendMovieGral => listTrendMovie.value;
+  List<Movie>? get listFavoriteMovieGral => listFavoritesMovies.value;
+  
 }

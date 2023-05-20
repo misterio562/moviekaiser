@@ -20,6 +20,14 @@ class RequestMovie {
     return compute(convertirAlista, response.body);
   }
 
+  static Future<List<Movie>> getFavoritesMovies(int iu) async {
+    var url =
+        Uri.parse("https://moviekaiser.online/APIMOVIE/getFavoritesMovies.php");
+    final response = await http.post(url,body: {'idUser': iu.toString()});
+
+    return compute(convertirAlista, response.body);
+  }
+
   static Future<bool> addLike(int idMovie) async {
     var url = Uri.parse("https://moviekaiser.online/APIMOVIE/addLike.php");
 

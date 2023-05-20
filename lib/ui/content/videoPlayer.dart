@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:moviekaiser/domain/controller/controllerFavorite.dart';
 import 'package:moviekaiser/domain/controller/controllerLiked.dart';
 import 'package:moviekaiser/domain/controller/controllerUser.dart';
 import 'package:moviekaiser/domain/controller/movie/controllerMovie.dart';
@@ -10,7 +11,7 @@ import '../../domain/models/movie.dart';
 class VideoDemo extends StatefulWidget {
   final Movie movie;
 
-  VideoDemo({Key? key, required this.movie}) : super(key: key);
+  const VideoDemo({Key? key, required this.movie}) : super(key: key);
 
   @override
   VideoDemoState createState() => VideoDemoState();
@@ -21,6 +22,7 @@ class VideoDemoState extends State<VideoDemo> {
   late Future<void> _initializeVideoPlayerFuture;
   bool showFullDescription = false;
   bool isLiked = false;
+  bool isFavorite = false;
 
   @override
   void initState() {
@@ -37,11 +39,18 @@ class VideoDemoState extends State<VideoDemo> {
     // Ejecutar la función getLikedByIdUser al iniciar el widget
     final controlLiked = Get.find<ControlLiked>();
     final controlUser = Get.find<ControlUser>();
+    final controlf = Get.find<ControlFavorite>();
     final idUser = controlUser.listaUserLogin![0].id;
     final idMovie = widget.movie.id;
     controlLiked.getLikedByIdUser(idUser, idMovie).then((result) {
       setState(() {
         isLiked = result;
+      });
+    });
+
+    controlf.getFavoriteMovie(idUser, idMovie).then((value) {
+      setState(() {
+        isFavorite = value;
       });
     });
 
@@ -60,6 +69,7 @@ class VideoDemoState extends State<VideoDemo> {
     ControlMovie controlm = Get.find();
     ControlLiked controll = Get.find();
     ControlUser controlu = Get.find();
+    ControlFavorite controlf = Get.find();
     return Scaffold(
       backgroundColor: Colors.black87,
       body: FutureBuilder(
@@ -81,7 +91,9 @@ class VideoDemoState extends State<VideoDemo> {
                           // controlm
                           //     .getMovieGral()
                           //     .then((value) => Get.toNamed('/listmovie'));
-                          Navigator.pop(context);
+                          controlm.getFavoritesMovies(controlu.listaUserLogin![0].id).then((value) {
+                            Navigator.pushNamed(context, '/home');
+                          });
                         },
                         icon: const Icon(Icons.close),
                         color: Colors.white,
@@ -164,12 +176,32 @@ class VideoDemoState extends State<VideoDemo> {
                         Column(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.add),
                               color: Colors.white,
-                              onPressed: () {},
+                              onPressed: () {
+                                int iu = controlu.listaUserLogin![0].id;
+                                int im = widget.movie.id;
+
+                                if (isFavorite) {
+                                  controlf.deleteFavoriteMovie(iu, im);
+                                  controlm.listFavoriteMovieGral!.remove(widget.movie);
+                                  setState(() {
+                                    isFavorite = !true;
+                                  });
+                                } else {
+                                  controlf.addToFavoriteMovies(iu, im);
+                                  setState(() {
+                                    isFavorite = true;
+                                  });
+                                }
+                              },
+                              icon: Icon(isFavorite
+                                  ? Icons.delete_outline
+                                  : Icons.playlist_add),
                             ), // Icono arriba
-                            const Text(
-                              "Añadir a lista", // Texto
+                            Text(
+                              isFavorite
+                                  ? "Quitar de tu lista"
+                                  : "Añadir a lista", // Texto
                               style:
                                   TextStyle(fontSize: 14, color: Colors.white),
                             ),
