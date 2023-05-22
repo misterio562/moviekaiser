@@ -7,6 +7,7 @@ import 'package:moviekaiser/ui/app.dart';
 import 'package:get/get.dart';
 
 void main() {
+  //hello
   Get.put(ControlUser());
   Get.put(ControlMovie());
   Get.put(ControlLiked());
