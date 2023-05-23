@@ -52,7 +52,7 @@ class _LoginState extends State<Login> {
               duration: const Duration(seconds: 3),
               icon: const Icon(Icons.info),
               shouldIconPulse: true,
-              backgroundColor: Colors.yellow);
+              backgroundColor: Colors.amber);
         } else {
           print(controlu.listaUserLogin![0].id);
           controlm.getFavoritesMovies(controlu.listaUserLogin![0].id);
@@ -68,11 +68,22 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage('assets/login.png'), fit: BoxFit.cover),
+      color: Colors.white,
+      child: Stack(
+    children: [
+      Positioned(
+        top: 100,
+        left: 10,
+        right: 10,
+        child:Container(
+          height: MediaQuery.of(context).size.height * 0.3,
+        child: Image.asset(
+          'assets/Moviekaiser.gif',
+          fit: BoxFit.cover,
+        ),
+        ),
       ),
-      child: Scaffold(
+      Scaffold(
         backgroundColor: Colors.transparent,
         body: Stack(children: [
           SingleChildScrollView(
@@ -114,25 +125,33 @@ class _LoginState extends State<Login> {
                   height: 40,
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      'Entrar',
-                      style: TextStyle(
-                        color: Color(0xff4c505b),
-                        fontSize: 27,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundColor: const Color(0xff4c505b),
-                      child: IconButton(
-                        color: Colors.white,
-                        onPressed: () {
-                          validateFields();
-                        },
-                        icon: const Icon(Icons.arrow_forward),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            validateFields();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary:Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.horizontal(
+                                left: Radius.circular(30),
+                                right: Radius.circular(30),
+                              ),
+                            ),
+                            padding: const EdgeInsets.all(15),
+                          ),
+                          child: Text(
+                            'Ingresar',
+                            style: TextStyle(
+                              color: Colors.amber,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -152,7 +171,7 @@ class _LoginState extends State<Login> {
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontSize: 15,
-                            color: Color(0xff4c505b),
+                            color: Colors.amber,
                           ),
                         ),
                       ),
@@ -163,7 +182,7 @@ class _LoginState extends State<Login> {
                           style: TextStyle(
                             decoration: TextDecoration.underline,
                             fontSize: 15,
-                            color: Color(0xff4c505b),
+                            color: Colors.amber,
                           ),
                         ),
                       ),
@@ -173,6 +192,6 @@ class _LoginState extends State<Login> {
           ),
         ]),
       ),
-    );
+      ]));
   }
 }
