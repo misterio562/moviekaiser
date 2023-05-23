@@ -8,9 +8,6 @@ import 'package:get/get.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() {
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  setup();
   Get.put(ControlUser());
   Get.put(ControlMovie());
   Get.put(ControlLiked());
