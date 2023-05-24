@@ -27,16 +27,9 @@ class VideoDemoState extends State<VideoDemo> {
   @override
   void initState() {
     super.initState();
-  }
+    isLiked = false;
+    isFavorite = false;
 
-  @override
-  void didChangeDependencies() {
-    _controller = VideoPlayerController.network(widget.movie.video);
-    _initializeVideoPlayerFuture = _controller.initialize();
-    _controller.setLooping(true);
-    _controller.setVolume(1.0);
-
-    // Ejecutar la función getLikedByIdUser al iniciar el widget
     final controlLiked = Get.find<ControlLiked>();
     final controlUser = Get.find<ControlUser>();
     final controlf = Get.find<ControlFavorite>();
@@ -54,7 +47,10 @@ class VideoDemoState extends State<VideoDemo> {
       });
     });
 
-    super.didChangeDependencies();
+    _controller = VideoPlayerController.network(widget.movie.video);
+    _initializeVideoPlayerFuture = _controller.initialize();
+    _controller.setLooping(true);
+    _controller.setVolume(1.0);
   }
 
   @override
@@ -91,7 +87,10 @@ class VideoDemoState extends State<VideoDemo> {
                           // controlm
                           //     .getMovieGral()
                           //     .then((value) => Get.toNamed('/listmovie'));
-                          controlm.getFavoritesMovies(controlu.listaUserLogin![0].id).then((value) {
+                          controlm
+                              .getFavoritesMovies(
+                                  controlu.listaUserLogin![0].id)
+                              .then((value) {
                             Navigator.pushNamed(context, '/home');
                           });
                         },
@@ -183,7 +182,8 @@ class VideoDemoState extends State<VideoDemo> {
 
                                 if (isFavorite) {
                                   controlf.deleteFavoriteMovie(iu, im);
-                                  controlm.listFavoriteMovieGral!.remove(widget.movie);
+                                  controlm.listFavoriteMovieGral!
+                                      .remove(widget.movie);
                                   setState(() {
                                     isFavorite = !true;
                                   });
