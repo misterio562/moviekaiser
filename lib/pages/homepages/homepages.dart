@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moviekaiser/domain/controller/controllerUser.dart';
 import 'package:moviekaiser/domain/controller/movie/controllerMovie.dart';
+import 'package:moviekaiser/pages/search.dart';
 import 'package:moviekaiser/ui/auth/login.dart';
 
 import '../../domain/models/movie.dart';
@@ -22,7 +23,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   static const _kTabPages = <Widget>[
     BodyHome(),
-    Center(child: Icon(Icons.search, size: 64.0, color: Colors.amber)),
+    Search()
   ];
 
   static const _kTabs = <Tab>[
