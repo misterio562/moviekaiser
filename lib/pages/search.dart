@@ -30,7 +30,7 @@ class _SearchState extends State<Search> {
 
 
   void onTapPopular(int index) {
-    Movie movie = controlm.listPopularMovieGral![index];
+    Movie movie = searchResults[index];
     Get.to(() => VideoDemo(movie: movie));
   }
 
