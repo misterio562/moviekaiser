@@ -14,17 +14,43 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late ControlUser controlu;
   late ControlMovie controlm;
 
+  static const _kTabPages = <Widget>[
+    BodyHome(),
+    Center(child: Icon(Icons.search, size: 64.0, color: Colors.amber)),
+  ];
+
+  static const _kTabs = <Tab>[
+    Tab(
+      icon: Icon(Icons.home_outlined),
+      text: 'Inicio',
+    ),
+    Tab(
+      icon: Icon(Icons.search),
+      text: 'Buscar',
+    )
+  ];
+
   @override
   void initState() {
     super.initState();
+
+    _tabController = TabController(length: _kTabPages.length, vsync: this);
+
     controlm = Get.find<ControlMovie>();
     controlu = Get.find<ControlUser>();
     controlm.getFavoritesMovies(controlu.listaUserLogin![0].id);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _signOut() async {
@@ -94,8 +120,21 @@ class _HomeState extends State<Home> {
             ],
           ),
         ),
-        body: const BodyHome(),
-        bottomNavigationBar: const BottonNavigatosBar(),
+        body: TabBarView(
+          controller: _tabController,
+          children: _kTabPages,
+        ),
+        bottomNavigationBar: ClipRRect(
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(40), topRight: Radius.circular(30)),
+          child: Material(
+            color: Colors.amber,
+            child: TabBar(
+              tabs: _kTabs,
+              controller: _tabController,
+            ),
+          ),
+        ),
         backgroundColor: Colors.black,
       ),
     );
@@ -271,35 +310,6 @@ class _BodyHomeState extends State<BodyHome> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class BottonNavigatosBar extends StatelessWidget {
-  const BottonNavigatosBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(40), topRight: Radius.circular(30)),
-      child: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: Colors.black,
-            ),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Buscar'),
-          
-        ],
-        backgroundColor: Colors.amber,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Colors.black,
-        selectedLabelStyle: const TextStyle(color: Colors.black),
       ),
     );
   }
