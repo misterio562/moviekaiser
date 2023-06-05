@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:moviekaiser/domain/controller/controllerFavorite.dart';
@@ -23,6 +25,10 @@ class VideoDemoState extends State<VideoDemo> {
   bool showFullDescription = false;
   bool isLiked = false;
   bool isFavorite = false;
+  bool showPlayPauseButton = true;
+  bool isPlaying = false;
+
+  Timer? _timer;
 
   @override
   void initState() {
@@ -51,12 +57,35 @@ class VideoDemoState extends State<VideoDemo> {
     _initializeVideoPlayerFuture = _controller.initialize();
     _controller.setLooping(true);
     _controller.setVolume(1.0);
+
+    // startTimer();
+  }
+
+  // void startTimer() {
+  //   _timer = Timer(const Duration(seconds: 3), () {
+  //     setState(() {
+  //       showPlayPauseButton = false;
+  //     });
+  //   });
+  //   resetTimer();
+  // }
+
+  void resetTimer() {
+    setState(() {
+      showPlayPauseButton = false;
+    });
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        // showPlayPauseButton = true;
+      });
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _controller.pause();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -87,6 +116,10 @@ class VideoDemoState extends State<VideoDemo> {
                           // controlm
                           //     .getMovieGral()
                           //     .then((value) => Get.toNamed('/listmovie'));
+                          _controller.pause(); // Pausar el video
+                          _controller.seekTo(
+                              Duration.zero); // Volver al inicio del video
+                          _controller.dispose(); // Liberar recursos del video
                           controlm
                               .getFavoritesMovies(
                                   controlu.listaUserLogin![0].id)
@@ -242,38 +275,76 @@ class VideoDemoState extends State<VideoDemo> {
                                     fontSize: 14, color: Colors.white),
                               ),
                             ),
+                            GestureDetector(
+                              onTap: () {
+                                // resetTimer();
+
+                                setState(() {
+                                  showPlayPauseButton = !showPlayPauseButton;
+                                });
+
+                                // if (!showPlayPauseButton) {
+                                //   _controller.play();
+                                //   resetTimer();
+                                // }
+                                print("se presiono sobre el video");
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  AspectRatio(
+                                    aspectRatio: _controller.value.aspectRatio,
+                                    child: VideoPlayer(_controller),
+                                  ),
+                                  if (_controller.value.isInitialized)
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          if (_controller.value.isPlaying) {
+                                            _controller.pause();
+                                            isPlaying = false;
+                                          } else {
+                                            _controller.play();
+                                            resetTimer();
+                                            isPlaying = true;
+                                          }
+                                        });
+                                      },
+                                      icon: showPlayPauseButton
+                                          ? Icon(
+                                              isPlaying
+                                                  ? Icons.pause
+                                                  : Icons.play_arrow,
+                                              // _controller.value.isPlaying
+                                              //     ? Icons.pause
+                                              //     : Icons.play_arrow,
+                                              size: 64,
+                                              color: Colors.white,
+                                            )
+                                          : const Icon(
+                                              Icons.trip_origin,
+                                              color: Colors.transparent,
+                                            ),
+                                    )
+                                  else
+                                    CircularProgressIndicator(),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            VideoProgressIndicator(
+                              _controller,
+                              allowScrubbing: true,
+                            ),
                           ],
                         )),
                     const SizedBox(height: 10),
-                    AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
-                    const SizedBox(height: 10),
-                    VideoProgressIndicator(
-                      _controller,
-                      allowScrubbing: true,
-                    ),
                   ],
                 ),
               ),
             ],
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              _controller.play();
-            }
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
       ),
     );
   }
